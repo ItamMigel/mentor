@@ -2,10 +2,11 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
 from services.mentor_service import MentorService
+from utils.jwt_utils import get_user_id_from_token
 
 mentor_service = MentorService()
 
@@ -92,9 +93,11 @@ async def get_all():
 
 
 @mentor_router.post("/", response_model=CreateMentorPostResponse, status_code=201)
-async def create(mentor_request: MentorCreatePostRequest):
+async def create(mentor_request: MentorCreatePostRequest, user_id: str = Depends(get_user_id_from_token)):
     """
     Create a new mentor.
+
+    Requires JWT authentication.
 
     - **telegram_id**: tg id of the mentor. Example: @Chuvirla1453.
     - **name**: Name of the mentor.
@@ -163,9 +166,11 @@ async def get_by_tg_id(telegram_id: str):
 
 
 @mentor_router.get("/count/{mentor_id}", response_model=CountMentorRequestByIdGetResponse)
-async def count_by_id(mentor_id: UUID):
+async def count_by_id(mentor_id: UUID, user_id: str = Depends(get_user_id_from_token)):
     """
     Count unanswered requests of a mentor by their ID.
+
+    Requires JWT authentication.
 
     - **mentor_id**: Unique identifier of the mentor.
 
@@ -187,9 +192,11 @@ async def count_by_id(mentor_id: UUID):
 
 
 @mentor_router.get("/get_requests/{mentor_id}", response_model=GetMentorRequestsByIdGetResponse)
-async def get_all_requests_by_id(mentor_id: UUID):
+async def get_all_requests_by_id(mentor_id: UUID, user_id: str = Depends(get_user_id_from_token)):
     """
     Get all requests of a mentor by their ID.
+
+    Requires JWT authentication.
 
     - **mentor_id**: Unique identifier of the mentor.
 

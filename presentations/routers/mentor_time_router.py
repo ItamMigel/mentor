@@ -2,10 +2,11 @@ from datetime import datetime, time
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
 from services.mentor_time_service import MentorTimeService
+from utils.jwt_utils import get_user_id_from_token
 
 mentor_time_service = MentorTimeService()
 
@@ -98,9 +99,11 @@ async def get_all():
 
 
 @mentor_time_router.post("/", response_model=CreateMentorTimeRequestGetResponse, status_code=201)
-async def create_mentor_time(mentor_time_request: CreateMentorTimeRequestPostRequest):
+async def create_mentor_time(mentor_time_request: CreateMentorTimeRequestPostRequest, user_id: str = Depends(get_user_id_from_token)):
     """
     Create a new mentor time.
+    
+    Requires JWT authentication.
 
     - **day**: number of the day of the week. For example 0 -- Monday, 1 -- Tuesday, etc.
     - **time_start**: Start time of the free mentor time.
@@ -169,9 +172,11 @@ async def get_possible_time(mentor_id: UUID, day: int):
 
 
 @mentor_time_router.get("/count/{mentor_id}/{request_time}", response_model=CountMentorTimeGetRequest)
-async def count_requests(mentor_id: UUID, request_time: datetime):
+async def count_requests(mentor_id: UUID, request_time: datetime, user_id: str = Depends(get_user_id_from_token)):
     """
     Count all call requests to mentor on datetime.
+    
+    Requires JWT authentication.
 
     - **mentor_id**: Unique identifier of the mentor.
     - **request_time**: Datetime of call time in ISO format (e.g., 2023-10-01T12:00:00).
@@ -191,9 +196,11 @@ async def count_requests(mentor_id: UUID, request_time: datetime):
 
 
 @mentor_time_router.get("/check/{mentor_id}/{request_time}", response_model=CheckMentorTimeGetRequest)
-async def check_request(mentor_id: UUID, request_time: datetime):
+async def check_request(mentor_id: UUID, request_time: datetime, user_id: str = Depends(get_user_id_from_token)):
     """
     Check is time booked for mentor.
+    
+    Requires JWT authentication.
 
     - **mentor_id**: Unique identifier of the mentor.
     - **request_time**: Datetime of call time in ISO format (e.g., 2023-10-01T12:00:00).

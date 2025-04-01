@@ -113,6 +113,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Микросервис для менторства ITAM",
     description="ИСАД — это не детский сад\n\n"
+                "Авторизация происходит через JWT токен, переданный в заголовке Authorization.\n"
+                "Токен должен содержать поля 'uid' и 'email' и быть переданным как Bearer-токен.\n\n"
                 "Отдельная благодарность Крюкову Александру Михайловичу (https://github.com/Auxxxxx)\n"
                 "Без него этого микросервиса не было бы",
     lifespan=lifespan,
